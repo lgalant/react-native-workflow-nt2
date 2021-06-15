@@ -1,41 +1,44 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState , useContext} from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import GlobalContext from './context'
+import GlobalContext from '../Services/Global'
 
-//export default function Home({url, token, resetToken}) {
 export default function Home({navigation}) {
- 
-  const [backEndUser, setBackEndUser] = useState()
-/*
-  useEffect(()=> {
-      if (token && token.access.length > 0)
-          getUser()
-    },[token])
-*/
 
-const context = useContext(GlobalContext)
+const {state, dispatch} = useContext(GlobalContext)
 
+
+const traerToken = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@api_token')
+    if (jsonValue != null)
+      dispatch({type:'LOGIN',payload: jsonValue})
+  } catch(e) {
+    // error reading value
+  }
+}
 
 useEffect(() =>{
     
-  if (!context.loginData.token || context.loginData.token.access.length == 0) {
+  if ( state.token.length == 0) {
+      traerToken()
       navigation.navigate("LogIn")
   }
    else 
     getUser()
-  },[context.loginData.token])
+  },[state.token])
 
 
 
 useEffect(()=> {
   console.log("Estoy en HOME")
 },[])
+
   const getUser=() => {
 
     const headers = new Headers()
     headers.append("Content-type", "application/json")
-    headers.append("Authorization", "Bearer " + context.loginData.token.access)
+    headers.append("Authorization", "Bearer " + state.token)
 
     const requestOptions = {
       method:"GET",
@@ -43,7 +46,7 @@ useEffect(()=> {
      
     }
 
-    return fetch(context.URL +'api/usuario/me/', requestOptions )
+    return fetch(state.URL +'api/usuario/me/', requestOptions )
     .then(resp => {
        if (!resp.ok)
          throw Error(resp.statusText)
@@ -52,8 +55,7 @@ useEffect(()=> {
     )
     .then( jsonResp => {
       console.log("user", jsonResp)
-      setBackEndUser(jsonResp)
-      context.setName(jsonResp.user.first_name)
+      dispatch({type:'SET_NAME', payload:jsonResp})
     }
       )
     .catch( error => alert("Error:"+ error))
@@ -64,13 +66,11 @@ useEffect(()=> {
     <View style={styles.container}>
           <Text>Home</Text>
      
-      <Text> Access Token : {context.loginData.token.access}</Text>
-      <Text> User id: {backEndUser?backEndUser.id:"Vacio"}</Text>
-      <Text> User name: {backEndUser?backEndUser.user.first_name:"Vacio"}</Text>
-      <Text> User name context: {context.loginData?context.loginData.first_name:"Vacio"}</Text>
+      <Text> Access Token : {state.token}</Text>
+      <Text> User name context: {state.first_name}</Text>
 
       <Button
-       onPress= {()=>context.clearAll()}
+       onPress= {()=>dispatch({type:'LOGOUT'})}
       title="Log Out"
     />
 

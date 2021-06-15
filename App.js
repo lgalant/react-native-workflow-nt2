@@ -5,77 +5,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './Components/login'
 import Home from './Components/home'
 import Detalle from './Components/detalle'
-import GlobalContext from './Components/context'
+import GlobalContext, {Datos, reducer} from './Services/Global'
 
 import {NavigationContainer} from '@react-navigation/native'
 import {createStackNavigator} from '@react-navigation/stack'
+import { useReducer } from 'react';
 
 export default function App() {
 
   const [token, setToken] = useState("")
   const miStack = createStackNavigator()
 
-  const URL = 'https://nexustest.roche.com.ar/'
+  const [state, dispatch] = useReducer(reducer, Datos)
+   
 
-  /*
-  useEffect(()=> {
-      traerToken()
-  },[ ])
-
-  */
-  const guardarToken= async (token) => {
-    try {
-      const jsonValue = JSON.stringify(token)
-      await AsyncStorage.setItem('@api_token', jsonValue)
-      setToken(token)
-    } catch (e) {
-      // saving error
-    }
-  }
-
-
-  const [loginData, setLoginData] = useState({
-    username :"",
-    first_name:"",
-    email:"",
-    token:""
-  })
-
-  const setName = (name) =>
-  {
-    setLoginData({...loginData, first_name:name})
-  }
-
-
-  const setToken2 = (token) =>
-  {
-    setLoginData({...loginData,token})
-  }
-
-
-  const traerToken = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem('@api_token')
-      if (jsonValue != null)
-        setToken(JSON.parse(jsonValue))
-    } catch(e) {
-      // error reading value
-    }
-  }
-
-  const clearAll = async () => {
-    try {
-      await AsyncStorage.clear()
-      setToken("")
-      setToken2("") 
-    } catch(e) {
-      // clear error
-    }
-  
-  }
 
   return (
-    <GlobalContext.Provider value={{URL, loginData, setName, setToken2, clearAll}}>
+    <GlobalContext.Provider value={{state, dispatch}}>
       <NavigationContainer>
         <miStack.Navigator initialRouteName={"Principal"}>
           <miStack.Screen name="Principal" component={Home}/>

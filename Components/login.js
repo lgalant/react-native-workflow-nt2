@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { useContext } from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import GlobalContext from './context'
+import GlobalContext from '../Services/Global'
 
 //export default function Login({url, setToken}) {
 
@@ -11,7 +11,7 @@ export default function Login({navigation}) {
   const [usuario, setUsuario] = useState("nt2")
   const [password, setPassword] = useState("12345nt2")
 
-  const context = useContext(GlobalContext)
+  const {state, dispatch} = useContext(GlobalContext)
 
   const login=() => {
 
@@ -25,7 +25,7 @@ export default function Login({navigation}) {
       body: JSON.stringify({"username": usuario, "password": password})
     }
 
-    return fetch(context.URL +'auth/jwt/create/', requestOptions )
+    return fetch(state.URL +'auth/jwt/create/', requestOptions )
     .then(resp => {
        if (!resp.ok)
          throw Error(resp.statusText)
@@ -34,7 +34,7 @@ export default function Login({navigation}) {
     )
     .then( jsonResp => {
       console.log("resp", jsonResp)
-      context.setToken2(jsonResp)
+      dispatch({type:'LOGIN',payload: jsonResp})
       navigation.navigate("Principal")
     }
       )
