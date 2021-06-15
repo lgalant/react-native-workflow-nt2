@@ -4,6 +4,7 @@ import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './Components/login'
 import Home from './Components/home'
+import Detalle from './Components/detalle'
 import GlobalContext from './Components/context'
 
 import {NavigationContainer} from '@react-navigation/native'
@@ -14,7 +15,7 @@ export default function App() {
   const [token, setToken] = useState("")
   const miStack = createStackNavigator()
 
-  const URL = 'https://200.73.130.166/'
+  const URL = 'https://nexustest.roche.com.ar/'
 
   /*
   useEffect(()=> {
@@ -66,6 +67,7 @@ export default function App() {
     try {
       await AsyncStorage.clear()
       setToken("")
+      setToken2("") 
     } catch(e) {
       // clear error
     }
@@ -73,11 +75,12 @@ export default function App() {
   }
 
   return (
-    <GlobalContext.Provider value={{URL, loginData, setName, setToken2}}>
+    <GlobalContext.Provider value={{URL, loginData, setName, setToken2, clearAll}}>
       <NavigationContainer>
         <miStack.Navigator initialRouteName={"Principal"}>
           <miStack.Screen name="Principal" component={Home}/>
           <miStack.Screen name="LogIn" component={Login}/>
+          <miStack.Screen name="Detalle" component={Detalle}/>
         </miStack.Navigator>
       </NavigationContainer>
     </GlobalContext.Provider>

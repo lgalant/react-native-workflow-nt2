@@ -34,7 +34,8 @@ export default function Login({navigation}) {
     )
     .then( jsonResp => {
       console.log("resp", jsonResp)
-      context.setToken(jsonResp)
+      context.setToken2(jsonResp)
+      navigation.navigate("Principal")
     }
       )
     .catch( error => alert("Error:"+ error))
